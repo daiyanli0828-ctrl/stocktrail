@@ -1,0 +1,80 @@
+# {{ date }}（{{ weekday }}）· 晚间主报
+
+> 数据来源：{{ data_source }} · 生成时间 {{ generated_at }}
+
+## 一、市场概况
+
+| 项目 | 数值 |
+| --- | --- |
+{% if market.breadth %}
+| 涨跌家数 | 上涨 {{ market.breadth.up_count }} / 下跌 {{ market.breadth.down_count }} / 平盘 {{ market.breadth.flat_count }} |
+| 涨停 / 跌停 | {{ market.breadth.limit_up }} / {{ market.breadth.limit_down }}（含 ST） |
+| 两市成交额 | {% if market.breadth.total_amount is not none %}{{ '%.0f'|format(market.breadth.total_amount / 1e8) }} 亿元{% else %}—（成交额源不可用）{% endif %} |
+{% endif %}
+{% if market.index %}
+| 主要指数 | {% for i in market.index %}{{ i.index_name }} {{ i.close|g }}（{{ i.pct_chg|g }}%）{% if not loop.last %}　{% endif %}{% endfor %} |
+{% endif %}
+{% if market.breadth and market.breadth.amount_note != 'eastmoney 全市场求和' %}
+*注：成交额口径为{{ market.breadth.amount_note }}。*
+{% endif %}
+{% if market.breadth %}
+今日市场{{ '跌多涨少、资金偏防御' if market.breadth.down_count > market.breadth.up_count else '涨多跌少、资金偏进攻' }}（上涨 {{ market.breadth.up_count }} / 下跌 {{ market.breadth.down_count }}）。
+{% endif %}
+{% if market.hotspot %}
+{{ market.hotspot }}
+{% endif %}
+{% if anomaly %}
+{{ anomaly }}
+{% endif %}
+
+## 二、账户体检
+
+{{ health_lines | join('\n') }}
+
+## 三、自选异动
+
+{% if watchlist %}
+| 代码 | 名称 | 收盘 | 涨跌幅 | 状态 | 风险提示 |
+| --- | --- | --- | --- | --- | --- |
+{% for w in watchlist %}
+| {{ w.code }} | {{ w.name or '—' }} | {{ w.close|g }} | {{ '%.2f'|format(w.pct_chg) }}% | {{ w.state }} | {{ w.risk }} |
+{% endfor %}
+{% else %}
+（暂无自选股数据）
+{% endif %}
+
+{% if yesterday %}
+## 四、昨日验证
+
+- 昨日结论：{{ yesterday.conclusion }}
+- 判定：**{{ yesterday.verdict }}**（{{ yesterday.criterion }} · 判据 v{{ yesterday.rule_version }}）
+{% endif %}
+
+## 五、明日计划（条件式）
+
+{% if tomorrow_plan and tomorrow_plan.lines %}
+{% for line in tomorrow_plan.lines %}
+- {{ line }}
+{% endfor %}
+{% else %}
+- **今日无需操作**。
+{% endif %}
+
+## 六、交易频次
+
+- {{ trade_stats.line }}
+- 口径：非计划交易 = 无盘前承诺的成交；换手率 = 本月成交股数 ÷ 期末持仓股数。
+
+{% if llm_analysis %}
+## 🤖 交易复盘分析（LLM{% if strategy_name %} · 策略：{{ strategy_name }}{% endif %}）
+
+{{ llm_analysis }}
+
+> 本段由 LLM 生成，仅做复盘总结（非投资建议、无买卖指令）；其余段落由规则生成。
+{% endif %}
+
+---
+
+{{ quality_summary }}
+
+{{ disclaimer }}

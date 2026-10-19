@@ -1,0 +1,8 @@
+# GRGPZS 依赖
+akshare>=1.14.0
+pandas>=2.0
+pyyaml>=6.0
+jinja2>=3.1    # daily.md 模板渲染
+fastapi>=0.110 # P-13 本地网页界面（仅监听 127.0.0.1，本地使用）
+uvicorn>=0.29  # P-13 本地服务
+python-multipart>=0.0.9  # P-13 表单/文件上传（策略库上传入口，CHG-010）

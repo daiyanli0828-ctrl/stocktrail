@@ -1,0 +1,35 @@
+# ============================================================
+# 持仓快照（M0 手动维护，架构 §2 输入文件；F-05 账户体检数据源）
+# 修改后当日 run_daily 自动生效
+# 字段：
+#   code       6 位股票代码（字符串）
+#   shares     持仓股数
+#   avg_cost   持仓成本（元/股）
+#   opened_at  开仓日期 YYYY-MM-DD（用于平均持股天数）
+#   stop_loss  自设止损价（元/股，可选；破位提示依据，C10 唯一例外）
+#   plan_target 计划目标价（元/股，可选）
+# 说明：以下均为示例值，请替换成自己的持仓；不填持仓时账户体检只输出空态。
+# ============================================================
+# 账户级配置（F-05 对比档位上限，C2：档位=仓位阈值）
+account:
+  total_assets: 100000        # 总资产（元），用于总仓位 %
+  tier: 稳健                  # 档位：保守 / 稳健 / 激进
+tiers:
+  保守: {position_limit: 0.30, single_stock_limit: 0.15, industry_limit: 0.30}
+  稳健: {position_limit: 0.50, single_stock_limit: 0.20, industry_limit: 0.40}
+  激进: {position_limit: 0.80, single_stock_limit: 0.30, industry_limit: 0.50}
+
+positions:
+  # - code: "600519"
+  #   shares: 100
+  #   avg_cost: 1500.0
+  #   opened_at: "2026-08-01"
+  #   stop_loss: 1380.0
+  #   plan_target: 1750.0
+  # - code: "510300"
+  #   shares: 1000
+  #   avg_cost: 3.9
+  #   opened_at: "2026-07-20"
+  #   stop_loss: 3.8
+  #   plan_target: 4.3
+  []

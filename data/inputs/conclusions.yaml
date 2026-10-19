@@ -1,0 +1,21 @@
+# ============================================================
+# 前瞻结论（F-09，C6：prediction 必填）
+# 手动维护：每晚晚报时记录当日结论 + 可验证预测；次日 verify_yesterday.py 判定。
+# 结构：
+#   date        结论归属交易日 YYYY-MM-DD
+#   conclusion  结论一句话
+#   logic       依据
+#   prediction  ★必填：direction(up/down/flat) + target_scope(指数名或股票代码) + deadline(仅 next_day)
+#   prediction.criterion_id  可选：verify_rules.yaml 中的判据 id（默认 price_direction）
+# 判定结果：命中 / 未命中 / 部分命中（多目标判据预留）/ 无法判定（数据未就绪或判据未注册）
+# ============================================================
+conclusions:
+  # - date: "2026-08-28"
+  #   conclusion: "上证指数次日收涨"
+  #   logic: "缩量企稳 + 北向回流"
+  #   prediction:
+  #     direction: up
+  #     target_scope: 上证指数
+  #     deadline: next_day
+  #     # criterion_id: concept_excess_next_day   # 可选，默认 price_direction
+  []

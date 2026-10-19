@@ -1,0 +1,49 @@
+# ============================================================
+# 质量规则（M0 三条）—— 阈值只存在于本文件，代码不得硬编码（F-03 评审 A 级检查）
+# 依据：企划 v1.0 §7 数据质量（D1/D2）/ 架构 v0.6 §7
+# 板块分档涨跌幅阈值：ST 5% / 主板 10% / 创业板·科创板 20% / 退市整理 10%
+# ============================================================
+
+# 检查 1：价格非法（close <= 0 或 adj_close <= 0 → 拦截）
+price_invalid:
+  enabled: true
+  max_price: 0.0                # 价格 <= 0 判定非法
+
+# 检查 2：交易日缺数据（本地交易日历判定为交易日但无行情 → 标记 + 报告标注）
+missing_on_trading_day:
+  enabled: true
+  calendar_file: data/calendar/trading_calendar.yaml   # 本地交易日历（D3 兜底）
+  action: mark                 # mark=标记并在日报底部标注；不拦截
+
+# 检查 3：涨跌幅超板块分档阈值（→ 标记 + 拦截，可复核）
+pct_chg_threshold:
+  enabled: true
+  # action 字段为说明性（文档用途）：实际严重度按检查类型固定——价格非法/涨跌幅超阈=拦截(block)，
+  # 交易日缺数据=标记(mark)、豁免=info；代码不读取 action 值
+  action: block                # block=标记 + 拦截（日报底部标注"N 项异常已排除"）
+  # 板块判定优先级：ST > 新股首日 > 退市整理 > 创业板/科创板 > 主板
+  # 判定依据字段（对代码传入的每只股票）：
+  #   name: 股票名称（含 "ST" 或 "退" 判定）；board: 板块代码（如 300/301/688/689）
+  boards:
+    st:
+      max_pct_chg: 5.0         # ST 股（名称含 ST）
+    main:                      # 主板（沪市 60/68? 否——688 属科创板；深市 000/001/002/003）
+      max_pct_chg: 10.0
+    chi_next:                  # 创业板（300/301）
+      max_pct_chg: 20.0
+    star:                      # 科创板（688/689）
+      max_pct_chg: 20.0
+    delisting:                 # 退市整理（名称含"退"）
+      max_pct_chg: 10.0
+  # 新股首日豁免：上市首日不检查涨跌幅（实现：code_meta.listing_date == trade_date 时豁免；
+  # 生产环境 listing_date 由代码侧解析（东财故障时降级为不豁免），可手动在 code_meta 补充）
+  new_stock_first_day:
+    exempt: true
+
+# 除权日豁免（D1）：除权日跳过涨跌幅检查
+ex_dividend_exemption:
+  enabled: true
+  # 除权判定（与后复权刻度无关的稳健公式）：
+  #   当日 |adj_close 日变动% - close 日变动%| > 阈值 → 视为除权日
+  #   正常日两者≈实际涨跌幅（分歧≈0）；除权日 adj 连续而 raw 含分红跳空（分歧≈股息率）
+  adj_vs_close_diverg_threshold: 0.005   # 0.5% 的分歧视为除权跳变

@@ -1,0 +1,3 @@
+strategy:
+  active: 04_平衡
+  library_dir: data/strategies

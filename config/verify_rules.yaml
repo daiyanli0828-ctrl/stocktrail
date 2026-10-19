@@ -1,0 +1,31 @@
+# ============================================================
+# 预测验证判据（C6，事前锁定）—— F-09 启用
+# 原则：
+#   1. 判据只从本文件读取，代码不得硬编码（F-09 评审 A 级检查）；
+#   2. 判据每次修改必须升 version 并在 changelog 留记录（防止"看到结果后改判据"）；
+#   3. 任何进入日报的前瞻性结论必须携带 prediction（方向/口径/时限），无 prediction 拒绝写入；
+#   4. rule.type 为代码内实现的判据类型（见 scripts/verify_yesterday.py），
+#      新增类型 = 代码实现 + 本文件注册 + version+1。
+# ============================================================
+
+version: 2
+changelog:
+  - version: 1
+    date: 2026-08-31
+    change: "初始占位（F-09 前）"
+  - version: 2
+    date: 2026-08-31
+    change: "F-09 启用：注册 price_direction（方向命中）与 excess_return_over_benchmark（超额收益）两类判据"
+
+rules:
+  - id: price_direction
+    desc: "方向命中：标的在 prediction.deadline 当日的收盘方向与 prediction.direction 一致记命中"
+    type: price_direction
+    # direction 取 prediction.direction（up/down/flat）；target_scope 为指数名或股票代码
+    # 时限 deadline 取 prediction.deadline（M0 支持 next_day = 结论日后首个交易日）
+  - id: concept_excess_next_day
+    desc: "示例：次日概念指数相对沪深 300 超额收益 > +1% 记命中（M0 注册可用）"
+    type: excess_return_over_benchmark
+    params:
+      benchmark: 沪深300
+      min_excess: 0.01

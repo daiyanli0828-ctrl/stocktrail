@@ -1,0 +1,34 @@
+sources:
+  akshare:
+    enabled: true
+    module: app.collectors.akshare_src
+    class: AkshareSource
+    rate_limit_sec: 0.5
+    max_retries: 3
+    backoff_base_sec: 2.0
+  ths:
+    enabled: true
+    module: app.collectors.ths_src
+    class: ThsSource
+    credentials: config/secrets.yaml
+fetch:
+  sources:
+  - ths
+  - akshare
+  daily_quotes: true
+  index_snapshot:
+    enabled: true
+    index_names:
+    - 上证指数
+    - 深证成指
+    - 创业板指
+    - 沪深300
+  market_breadth: true
+  global_indices: false
+news:
+  sources:
+  - cls
+network:
+  proxy: direct
+output:
+  vault_dir: data/processed/vault

@@ -1,0 +1,11 @@
+# GRGPZS 历史成交对账模板（M0，架构 §2 输入文件）
+# 用途：仅用于【对账与补全成交价/手续费】（C19）——理由四字段不由 CSV 导入
+#       （reason_type/reason_note/plan_target/stop_loss 只能通过 note 命令录入，T+1 锁定）
+# 列说明：
+#   code        6 位股票代码（文本）
+#   side        buy / sell
+#   price       成交价（元/股）
+#   shares      成交数量（股）
+#   ts          成交时间，ISO-8601，含时区（如 2026-08-31T14:05:00+08:00）
+# 空模板：仅保留表头即可，无成交时脚本跳过本文件
+code,side,price,shares,ts

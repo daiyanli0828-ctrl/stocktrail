@@ -1,0 +1,26 @@
+# ============ 敏感凭证（勿提交）============
+config/secrets.yaml
+.env
+.env.*
+*.pem
+*.key
+
+# ============ 运行时数据（个人持仓/日报/数据库）============
+data/processed/
+data/raw/
+*.db
+*.sqlite
+*.log
+
+# ============ Python ============
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# ============ 系统 ============
+.DS_Store
+Thumbs.db
+desktop.ini
